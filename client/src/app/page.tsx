@@ -15,7 +15,7 @@ const App = () => {
   const [nonce, setNonce] = useState(0);
   const [previousServerSeed, setPreviousServerSeed] = useState('');
   const [verifying, setVerifying] = useState(false);
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState<{ roll: number; bet: number; result: string; profit: number; nonce: number; }[]>([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
