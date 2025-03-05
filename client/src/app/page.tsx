@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 
 const App = () => {
   const [balance, setBalance] = useState(1000);
-  const [betAmount, setBetAmount] = useState(10);
+  const [betAmount, setBetAmount] = useState(10)  ;
   const [diceValue, setDiceValue] = useState<number | null>(null);
   const [isRolling, setIsRolling] = useState(false);
   const [serverSeed, setServerSeed] = useState('');
@@ -42,6 +42,7 @@ const App = () => {
       setPreviousServerSeed(response.data.previousServerSeed || '');
       setNonce(0);
     } catch (err) {
+      console.error("Error fetching seeds:", err);
       setError('Failed to initialize game. Please refresh.');
     }
   };
@@ -103,11 +104,14 @@ const App = () => {
         setIsRolling(false);
       }, 1000);
     } catch (err) {
-      setIsRolling(false);
-      setError(err.response?.data?.message || 'Error rolling dice. Try again.');
+      if (axios.isAxiosError(err)) {
+        const errorMessage = (err.response?.data as { message?: string })?.message || "Error rolling dice. Try again.";
+        setError(errorMessage);
+      } else {
+        setError("An unexpected error occurred.");
+      }
     }
-  };
-
+  }
   const verifyRoll = async () => {
     if (!previousServerSeed) {
       setError('No previous round to verify yet.');
@@ -124,6 +128,7 @@ const App = () => {
       
       alert(`Verification Result: ${response.data.verified ? 'Success' : 'Failed'}\nExpected Roll: ${response.data.roll}`);
     } catch (err) {
+      console.log('Error fetching seeds:',err)
       setError('Verification failed.');
     } finally {
       setVerifying(false);
@@ -268,7 +273,7 @@ const App = () => {
             ))}
             {history.length === 0 && (
               <tr>
-                <td colSpan="4">No rolls yet</td>
+                <td colSpan = {4}>No rolls yet</td>
               </tr>
             )}
           </tbody>
@@ -277,5 +282,4 @@ const App = () => {
     </div>
   );
 };
-
 export default App;
