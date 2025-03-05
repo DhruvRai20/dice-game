@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 const App = () => {
   const [balance, setBalance] = useState(1000);
   const [betAmount, setBetAmount] = useState(10);
-  const [diceValue, setDiceValue] = useState(null);
+  const [diceValue, setDiceValue] = useState<number | null>(null);
   const [isRolling, setIsRolling] = useState(false);
   const [serverSeed, setServerSeed] = useState('');
   const [clientSeed, setClientSeed] = useState('');
@@ -31,12 +31,12 @@ const App = () => {
 
   useEffect(() => {
     // Save balance to localStorage whenever it changes
-    localStorage.setItem('diceGameBalance', balance);
+    localStorage.setItem('diceGameBalance', balance.toString());
   }, [balance]);
 
   const fetchNewSeeds = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/get-seeds');
+      const response = await axios.get('https://dice-game-fke2.onrender.com/api/get-seeds');
       setServerSeed(response.data.serverSeedHash);
       setClientSeed(response.data.clientSeed);
       setPreviousServerSeed(response.data.previousServerSeed || '');
@@ -46,7 +46,7 @@ const App = () => {
     }
   };
 
-  const handleBetChange = (e) => {
+  const handleBetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     if (value > balance) {
       setBetAmount(balance);
@@ -64,7 +64,7 @@ const App = () => {
     setError('');
     
     try {
-      const response = await axios.post('http://localhost:3001/api/roll-dice', {
+      const response = await axios.post('https://dice-game-fke2.onrender.com/api/roll-dice', {
         betAmount,
         clientSeed,
         serverSeedHash: serverSeed,
@@ -116,7 +116,7 @@ const App = () => {
     
     setVerifying(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/verify', {
+      const response = await axios.post('https://dice-game-fke2.onrender.com/api/verify', {
         serverSeed: previousServerSeed,
         clientSeed,
         nonce: nonce - 1
